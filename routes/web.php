@@ -21,14 +21,20 @@ Route::get('/', function () {
 Route::get('/produtos', 'ProdutoControlador@index');
 
 Route::get('/negado', function() {
-	return "Acesso negado!";
+	return "Acesso negado! Você precisa estar logado para acessar esta página!";
 })->name('negado');
+
+Route::get('negadologin', function() {
+	return "Você precisa estar logado como administrador";
+})->name('negadologin');
 
 Route::post('/login', function(Request $req) {
 	$login_ok = false;
+	$admin = false;
 	switch ($req->input('user')) {
 		case 'joao':
 			$login_ok = $req->input('passwd') === "senhajoao";
+			$admin = true;
 			break;
 
 		case 'marcos':
@@ -40,7 +46,7 @@ Route::post('/login', function(Request $req) {
 			break;
 	}
 	if($login_ok) {
-		$login = ['user' => $req->input('user')];
+		$login = ['user' => $req->input('user'), 'admin' => $admin];
 		$req->session()->put('login', $login);
 		return response("Login OK", 200);
 	} else {
